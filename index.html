@@ -35,6 +35,7 @@
                 <div class="nav-item active"><i class="fa-solid fa-chart-line"></i> <span data-i18n="menuTrends">Market Trends</span></div>
                 <div class="nav-item" id="bestMandiMenuBtn"><i class="fa-solid fa-location-dot"></i> <span data-i18n="menuBest">Best Mandis</span></div>
                 <div class="nav-item"><i class="fa-solid fa-robot"></i> <span data-i18n="menuAI">AI Predictions</span></div>
+                <div class="nav-item" id="priceCompareMenuBtn"><i class="fa-solid fa-code-compare"></i> <span data-i18n="menuCompare">Price Comparison</span></div>
                 <div class="nav-item" id="basicCalcMenuBtn"><i class="fa-solid fa-calculator"></i> <span data-i18n="menuBasicCalc">Basic Calculator</span></div>
                 <div class="nav-item" id="calcMenuBtn"><i class="fa-solid fa-wallet"></i> <span data-i18n="menuCalc">Profit Calculator</span></div>
             </nav>
@@ -243,6 +244,50 @@
                 <button class="calc-button" onclick="appendCalc('0')">0</button>
                 <button class="calc-button op-btn" style="background:var(--emerald);" onclick="evaluateCalc()">=</button>
                 <button class="calc-button op-btn" onclick="appendCalc('+')">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Price Comparison Modal -->
+    <div id="priceCompareModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 800px; max-width: 95%;">
+            <div class="modal-header">
+                <h3 data-i18n="compareTitle">Price Comparison (Ref: Lucknow)</h3>
+                <button id="closeCompare" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                    <input type="text" id="compareSearch" class="cyber-select" placeholder="Search Mandi/City..." style="width: 100%;">
+                </div>
+                <div style="width: 200px;">
+                    <select id="compareCropSelect" class="cyber-select">
+                        <option value="All">All Crops</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Potato">Potato</option>
+                    </select>
+                </div>
+                <button id="runCompare" class="btn-primary" style="width: auto;">Compare</button>
+            </div>
+
+            <div id="compareResults" style="max-height: 400px; overflow-y: auto;">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Mandi / City</th>
+                            <th>Crop</th>
+                            <th>Price (₹/Qtl)</th>
+                            <th>Dist from Lucknow (KM)</th>
+                            <th>Trans. Charge (₹)</th>
+                            <th>Estimated Total (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="compareResultsBody">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -53,7 +53,9 @@ const translations = {
         aiModelLabel: "AI Brain (OpenRouter)",
         aiModelDefault: "Default Mode (Math Rules)",
         menuBasicCalc: "Basic Calculator",
-        basicCalcTitle: "Hardware Calculator"
+        basicCalcTitle: "Hardware Calculator",
+        menuCompare: "Price Comparison",
+        compareTitle: "Price Comparison (Ref: Lucknow)"
     },
     hi: {
         appTitle: "मंडी<span class='text-emerald'>इंटेल</span>",
@@ -103,7 +105,9 @@ const translations = {
         aiModelLabel: "AI मस्तिष्क (OpenRouter)",
         aiModelDefault: "डिफ़ॉल्ट मोड (गणित नियम)",
         menuBasicCalc: "बेसिक कैलकुलेटर",
-        basicCalcTitle: "हार्डवेयर कैलकुलेटर"
+        basicCalcTitle: "हार्डवेयर कैलकुलेटर",
+        menuCompare: "मूल्य तुलना",
+        compareTitle: "मूल्य तुलना (संदर्भ: लखनऊ)"
     }
 };
 
@@ -754,6 +758,81 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         });
+    });
+
+    // ----------------------------------------------------
+    // Price Comparison Engine (Reference: Lucknow)
+    // ----------------------------------------------------
+    const compareModal = document.getElementById('priceCompareModal');
+    const lucknowCoords = { lat: 26.8467, lng: 80.9462 };
+
+    const mandiCoords = {
+        'Azadpur': { lat: 28.7360, lng: 77.1728 },
+        'Nashik': { lat: 20.0000, lng: 73.7845 },
+        'Karnal': { lat: 29.6857, lng: 76.9905 },
+        'Pune': { lat: 18.5204, lng: 73.8567 },
+        'Vadhvan APMC': { lat: 19.8516, lng: 72.8252 },
+        'Lucknow': { lat: 26.8467, lng: 80.9462 },
+        'Kanpur': { lat: 26.4499, lng: 80.3319 },
+        'Varanasi': { lat: 25.3176, lng: 82.9739 },
+        'Agra': { lat: 27.1767, lng: 78.0081 }
+    };
+
+    const getDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    };
+
+    document.getElementById('priceCompareMenuBtn').addEventListener('click', () => {
+        compareModal.classList.remove('hidden');
+    });
+    document.getElementById('closeCompare').addEventListener('click', () => {
+        compareModal.classList.add('hidden');
+    });
+
+    document.getElementById('runCompare').addEventListener('click', () => {
+        const searchQuery = document.getElementById('compareSearch').value.toLowerCase();
+        const selectedCrop = document.getElementById('compareCropSelect').value;
+        const body = document.getElementById('compareResultsBody');
+        body.innerHTML = '';
+
+        const data = cleanData(window.__cachedRawData || []);
+        
+        let filtered = data.filter(item => {
+            const matchesSearch = item.mandi.toLowerCase().includes(searchQuery) || item.district.toLowerCase().includes(searchQuery);
+            const matchesCrop = selectedCrop === 'All' || item.commodity === selectedCrop;
+            return matchesSearch && matchesCrop;
+        });
+
+        filtered.forEach(item => {
+            const coords = mandiCoords[item.mandi] || { lat: 26.0 + (Math.random()-0.5)*4, lng: 80.0 + (Math.random()-0.5)*4 };
+            const dist = getDistance(lucknowCoords.lat, lucknowCoords.lng, coords.lat, coords.lng);
+            const transportRate = 5; // ₹5 per KM per Quintal
+            const transCharge = Math.round(dist * transportRate);
+            const total = item.price + transCharge;
+
+            const row = `
+                <tr>
+                    <td><strong>${translateData(item.mandi)}</strong><br><small>${translateData(item.district)}</small></td>
+                    <td>${translateData(item.commodity)}</td>
+                    <td class="text-highlight">₹${item.price}</td>
+                    <td>${Math.round(dist)} KM</td>
+                    <td>₹${transCharge}</td>
+                    <td style="font-weight:700; color:var(--blue);">₹${total}</td>
+                </tr>
+            `;
+            body.insertAdjacentHTML('beforeend', row);
+        });
+
+        if (filtered.length === 0) {
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">No data found matching criteria.</td></tr>';
+        }
     });
 
     // ----------------------------------------------------
