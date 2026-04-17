@@ -796,24 +796,32 @@ document.addEventListener('DOMContentLoaded', () => {
         compareModal.classList.add('hidden');
     });
 
-    document.getElementById('runCompare').addEventListener('click', () => {
+    const renderComparisonList = () => {
         const searchQuery = document.getElementById('compareSearch').value.toLowerCase();
         const selectedCrop = document.getElementById('compareCropSelect').value;
         const body = document.getElementById('compareResultsBody');
-        body.innerHTML = '';
+        
+        if (!selectedCrop) {
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:60px; color:var(--text-muted);">Please select a crop to see nationwide price comparisons.</td></tr>';
+            return;
+        }
 
+        body.innerHTML = '';
         const data = cleanData(window.__cachedRawData || []);
         
         let filtered = data.filter(item => {
             const matchesSearch = item.mandi.toLowerCase().includes(searchQuery) || item.district.toLowerCase().includes(searchQuery);
-            const matchesCrop = selectedCrop === 'All' || item.commodity === selectedCrop;
-            return matchesSearch && matchesCrop;
+            const matchesCrop = item.commodity === selectedCrop;
+            return matchesCrop && matchesSearch;
         });
+
+        // Ensure we show all places for the crop, sorted by lowest price first
+        filtered.sort((a,b) => a.price - b.price);
 
         filtered.forEach(item => {
             const coords = mandiCoords[item.mandi] || { lat: 26.0 + (Math.random()-0.5)*4, lng: 80.0 + (Math.random()-0.5)*4 };
             const dist = getDistance(lucknowCoords.lat, lucknowCoords.lng, coords.lat, coords.lng);
-            const transportRate = 5; // ₹5 per KM per Quintal
+            const transportRate = 5; 
             const transCharge = Math.round(dist * transportRate);
             const total = item.price + transCharge;
 
@@ -831,9 +839,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (filtered.length === 0) {
-            body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">No data found matching criteria.</td></tr>';
+            body.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px;">No records found for ${translateData(selectedCrop)} with that search filter.</td></tr>`;
         }
-    });
+    };
+
+    document.getElementById('compareCropSelect').addEventListener('change', renderComparisonList);
+    document.getElementById('compareSearch').addEventListener('input', renderComparisonList);
 
     // ----------------------------------------------------
     // Basic Calculator Engine
