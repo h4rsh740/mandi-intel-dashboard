@@ -21,6 +21,9 @@
         </div>
     </div>
 
+    <!-- Mobile Sidebar Dark Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay"></div>
+
     <div class="app-container">
         <aside class="sidebar glass-panel">
             <div class="logo">
@@ -32,6 +35,7 @@
                 <div class="nav-item active"><i class="fa-solid fa-chart-line"></i> <span data-i18n="menuTrends">Market Trends</span></div>
                 <div class="nav-item" id="bestMandiMenuBtn"><i class="fa-solid fa-location-dot"></i> <span data-i18n="menuBest">Best Mandis</span></div>
                 <div class="nav-item"><i class="fa-solid fa-robot"></i> <span data-i18n="menuAI">AI Predictions</span></div>
+                <div class="nav-item" id="basicCalcMenuBtn"><i class="fa-solid fa-calculator"></i> <span data-i18n="menuBasicCalc">Basic Calculator</span></div>
                 <div class="nav-item" id="calcMenuBtn"><i class="fa-solid fa-wallet"></i> <span data-i18n="menuCalc">Profit Calculator</span></div>
             </nav>
 
@@ -205,6 +209,40 @@
 
             <div id="finderResults" class="insights-list" style="margin-top: 10px; max-height: 250px; overflow-y: auto;">
                 <!-- Dynamically injected results -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Basic Calculator Modal -->
+    <div id="basicCalcModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 340px;">
+            <div class="modal-header">
+                <h3 data-i18n="basicCalcTitle">Basic Calculator</h3>
+                <button id="closeBasicCalc" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="basic-calc-grid">
+                <input type="text" id="calcDisplay" class="calc-display" disabled placeholder="0">
+                
+                <button class="calc-button" onclick="appendCalc('7')">7</button>
+                <button class="calc-button" onclick="appendCalc('8')">8</button>
+                <button class="calc-button" onclick="appendCalc('9')">9</button>
+                <button class="calc-button op-btn" onclick="appendCalc('/')">/</button>
+
+                <button class="calc-button" onclick="appendCalc('4')">4</button>
+                <button class="calc-button" onclick="appendCalc('5')">5</button>
+                <button class="calc-button" onclick="appendCalc('6')">6</button>
+                <button class="calc-button op-btn" onclick="appendCalc('*')">×</button>
+
+                <button class="calc-button" onclick="appendCalc('1')">1</button>
+                <button class="calc-button" onclick="appendCalc('2')">2</button>
+                <button class="calc-button" onclick="appendCalc('3')">3</button>
+                <button class="calc-button op-btn" onclick="appendCalc('-')">-</button>
+
+                <button class="calc-button clear-btn" onclick="appendCalc('C')">C</button>
+                <button class="calc-button" onclick="appendCalc('0')">0</button>
+                <button class="calc-button op-btn" style="background:var(--emerald);" onclick="evaluateCalc()">=</button>
+                <button class="calc-button op-btn" onclick="appendCalc('+')">+</button>
             </div>
         </div>
     </div>

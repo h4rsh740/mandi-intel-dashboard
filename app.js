@@ -51,7 +51,9 @@ const translations = {
         factorVolume: "Highest Trade Volume (Simulated)",
         finderBtn: "Find Best Mandis",
         aiModelLabel: "AI Brain (OpenRouter)",
-        aiModelDefault: "Default Mode (Math Rules)"
+        aiModelDefault: "Default Mode (Math Rules)",
+        menuBasicCalc: "Basic Calculator",
+        basicCalcTitle: "Hardware Calculator"
     },
     hi: {
         appTitle: "मंडी<span class='text-emerald'>इंटेल</span>",
@@ -99,7 +101,9 @@ const translations = {
         factorVolume: "उच्चतम व्यापार मात्रा (सिम्युलेटेड)",
         finderBtn: "सर्वश्रेष्ठ मंडी खोजें",
         aiModelLabel: "AI मस्तिष्क (OpenRouter)",
-        aiModelDefault: "डिफ़ॉल्ट मोड (गणित नियम)"
+        aiModelDefault: "डिफ़ॉल्ट मोड (गणित नियम)",
+        menuBasicCalc: "बेसिक कैलकुलेटर",
+        basicCalcTitle: "हार्डवेयर कैलकुलेटर"
     }
 };
 
@@ -753,20 +757,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ----------------------------------------------------
+    // Basic Calculator Engine
+    // ----------------------------------------------------
+    const basicCalcModal = document.getElementById('basicCalcModal');
+    document.getElementById('basicCalcMenuBtn').addEventListener('click', () => {
+        basicCalcModal.classList.remove('hidden');
+    });
+    document.getElementById('closeBasicCalc').addEventListener('click', () => {
+        basicCalcModal.classList.add('hidden');
+    });
+
+    window.appendCalc = function(val) {
+        const display = document.getElementById('calcDisplay');
+        if (display.value === 'Error') display.value = '';
+        if (val === 'C') { display.value = ''; }
+        else { display.value += val; }
+    };
+
+    window.evaluateCalc = function() {
+        const display = document.getElementById('calcDisplay');
+        try {
+            // Function constructor avoids dangerous raw eval context
+            display.value = new Function('return ' + display.value)();
+        } catch (e) {
+            display.value = 'Error';
+        }
+    };
+
+    // ----------------------------------------------------
     // Mobile Hamburger Menu Override
     // ----------------------------------------------------
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.querySelector('.sidebar');
+    const mobileOverlay = document.getElementById('mobileMenuOverlay');
     
     if (mobileMenuBtn && sidebar) {
         mobileMenuBtn.addEventListener('click', () => {
             sidebar.classList.toggle('open');
+            if (mobileOverlay) mobileOverlay.classList.toggle('active');
         });
 
-        // Close sidebar on apply filters
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                mobileOverlay.classList.remove('active');
+            });
+        }
+
+        // Close sidebar safely on apply filters
         document.getElementById('applyFilters').addEventListener('click', () => {
             if (window.innerWidth <= 800) {
                 sidebar.classList.remove('open');
+                if (mobileOverlay) mobileOverlay.classList.remove('active');
             }
         });
     }

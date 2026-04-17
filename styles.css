@@ -330,8 +330,30 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; }
 .calc-field input, .calc-field select { background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; padding: 10px; border-radius: 6px; outline: none; font-family: inherit;}
 .calc-result { padding: 16px; background: var(--emerald-light); border-left: 4px solid var(--emerald); border-radius: 6px; font-size: 1.1rem; font-weight: 600; text-align: center; }
 
-/* Mobile Menu */
+/* Basic Calculator Grid */
+.basic-calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.calc-display { grid-column: span 4; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: var(--emerald); font-size: 1.8rem; font-weight: 700; text-align: right; padding: 15px; border-radius: 8px; margin-bottom: 10px; font-family: monospace; letter-spacing: 2px;}
+.calc-button { padding: 15px 0; font-size: 1.2rem; font-weight: 600; font-family: inherit; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; background: rgba(255,255,255,0.1); color: white; transition: background 0.2s, transform 0.1s;}
+.calc-button:hover { background: rgba(255,255,255,0.2); }
+.calc-button:active { transform: scale(0.95); }
+.op-btn { background: rgba(56, 189, 248, 0.2); color: var(--blue); }
+.op-btn:hover { background: rgba(56, 189, 248, 0.3); }
+.clear-btn { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+.clear-btn:hover { background: rgba(239, 68, 68, 0.3); }
+
+/* Mobile Menu UX */
 .mobile-menu-btn { display: none; background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 0 5px; }
+
+.mobile-menu-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 1000;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.mobile-menu-overlay.active { opacity: 1; visibility: visible; }
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -345,10 +367,13 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; }
     .sidebar { 
         position: fixed; left: -320px; top: 0; bottom: 0; z-index: 1001; 
         width: 300px; max-width: 300px; 
-        transition: left 0.3s ease; 
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
         background: rgba(15, 23, 42, 0.98); 
+        overflow-y: auto;
+        padding-bottom: 40px;
+        border-right: 1px solid var(--panel-border);
     }
-    .sidebar.open { left: 0; }
+    .sidebar.open { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
     .main-content { padding: 15px; width: 100vw; box-sizing: border-box; overflow-x: hidden; }
     .mobile-menu-btn { display: block; }
     .top-header { flex-wrap: wrap; text-align: center; justify-content: space-between; }
