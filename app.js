@@ -804,12 +804,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Close sidebar safely on apply filters
-        document.getElementById('applyFilters').addEventListener('click', () => {
+        // Auto collapse sidebar efficiently on specific actions
+        const closeSidebarOnMobile = () => {
             if (window.innerWidth <= 800) {
                 sidebar.classList.remove('open');
                 if (mobileOverlay) mobileOverlay.classList.remove('active');
             }
+        };
+
+        // Close on action clicks
+        document.getElementById('applyFilters').addEventListener('click', closeSidebarOnMobile);
+        document.getElementById('toggleDataBtn').addEventListener('click', closeSidebarOnMobile);
+        
+        // Auto close when any menu item is selected
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', closeSidebarOnMobile);
         });
     }
 });
