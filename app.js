@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const populateComparisonCrops = () => {
         const select = document.getElementById('compareCropSelect');
         const data = cleanData(window.__cachedRawData || []);
-        const uniqueCrops = [...new Set(data.map(item => item.commodity))].sort();
+        const uniqueCrops = [...new Set(data.map(item => item.crop))].sort();
         
         // Preserve "Choose Crop" option
         const promptText = currentLang === 'hi' ? translations.hi.selectCropPrompt : translations.en.selectCropPrompt;
@@ -832,7 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let filtered = data.filter(item => {
             const matchesSearch = item.mandi.toLowerCase().includes(searchQuery) || item.district.toLowerCase().includes(searchQuery);
-            const matchesCrop = item.commodity === selectedCrop;
+            const matchesCrop = item.crop === selectedCrop;
             return matchesCrop && matchesSearch;
         });
 

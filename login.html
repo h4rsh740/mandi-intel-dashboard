@@ -98,9 +98,10 @@
             errorMsg.style.display = 'none';
         });
 
-        authBtn.addEventListener('click', () => {
+        authBtn.addEventListener('click', async () => {
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
+            const endpoint = isLogin ? '/api/login' : '/api/register';
 
             if (!user || !pass) {
                 errorMsg.innerText = 'Please fill all fields';
@@ -108,28 +109,26 @@
                 return;
             }
 
-            if (isLogin) {
-                const stored = JSON.parse(localStorage.getItem('farmerDB') || '[]');
-                const found = stored.find(u => u.username === user && u.password === pass);
-                if (found || (user === 'admin' && pass === 'admin')) {
+            try {
+                const response = await fetch(`http://localhost:3000${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
                     localStorage.setItem('mandiUser', user);
+                    if (!isLogin) alert('Farmer Account Created Successfully!');
                     window.location.href = 'index.html';
                 } else {
-                    errorMsg.innerText = 'Invalid username or password';
+                    errorMsg.innerText = data.message || 'Authentication Failed';
                     errorMsg.style.display = 'block';
                 }
-            } else {
-                const stored = JSON.parse(localStorage.getItem('farmerDB') || '[]');
-                if (stored.find(u => u.username === user)) {
-                    errorMsg.innerText = 'Username already exists';
-                    errorMsg.style.display = 'block';
-                } else {
-                    stored.push({username: user, password: pass});
-                    localStorage.setItem('farmerDB', JSON.stringify(stored));
-                    localStorage.setItem('mandiUser', user);
-                    alert('Farmer Account Created Successfully!');
-                    window.location.href = 'index.html';
-                }
+            } catch (err) {
+                errorMsg.innerText = 'Auth Server is OFFLINE. Run node server.js first.';
+                errorMsg.style.display = 'block';
             }
         });
     </script>
