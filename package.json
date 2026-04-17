@@ -4,6 +4,7 @@
   "description": "<div align=\"center\">   <img src=\"assets/avatar.png\" width=\"120\" height=\"120\" style=\"border-radius: 50%; border: 2px solid #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);\" alt=\"Mandi Intel Logo\">   <h1>🌾 MandiIntel Dashboard</h1>   <p><strong>Next-Generation AI-Powered Agricultural Intelligence for Indian Farmers</strong></p> </div>",
   "main": "app.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

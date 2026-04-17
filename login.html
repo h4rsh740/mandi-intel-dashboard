@@ -56,9 +56,36 @@
         .toggle-text { margin-top: 20px; font-size: 0.9rem; color: #94a3b8; }
         .toggle-text span { color: var(--emerald); cursor: pointer; font-weight: 600; }
         .error { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
+
+        /* Global Loader */
+        .global-loader {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-dark); z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .loader-content { text-align: center; }
+        .spinner-modern {
+            width: 44px; height: 44px;
+            border: 3px solid rgba(16, 185, 129, 0.2);
+            border-top-color: var(--emerald);
+            border-radius: 50%;
+            margin: 24px auto 0;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.5; transform: scale(0.95); } }
     </style>
 </head>
 <body>
+    <div id="globalLoader" class="global-loader">
+        <div class="loader-content">
+            <i class="fa-solid fa-leaf emerald" style="font-size: 3rem; margin-bottom: 15px; animation: pulse 2s infinite;"></i>
+            <h1 style="margin:0; font-size: 2.5rem; letter-spacing: -1px;">Mandi<span class="emerald">Intel</span></h1>
+            <p style="color: #94a3b8; margin-top: 10px; font-weight: 300;">Initializing Secure Auth Nodes...</p>
+            <div class="spinner-modern"></div>
+        </div>
+    </div>
     <div class="login-card">
         <div class="logo">Mandi<span class="emerald">Intel</span></div>
         <h2 id="authTitle">Farmer Login</h2>
@@ -130,6 +157,18 @@
                 errorMsg.innerText = 'Auth Server is OFFLINE. Run node server.js first.';
                 errorMsg.style.display = 'block';
             }
+        });
+
+        // Artificial Aesthetic Delay for First Impression
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('globalLoader');
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                    loader.style.display = 'none';
+                }, 600);
+            }, 2000); 
         });
     </script>
 </body>
