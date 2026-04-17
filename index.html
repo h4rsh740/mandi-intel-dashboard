@@ -32,7 +32,6 @@
                 <div class="nav-item active"><i class="fa-solid fa-chart-line"></i> <span data-i18n="menuTrends">Market Trends</span></div>
                 <div class="nav-item" id="bestMandiMenuBtn"><i class="fa-solid fa-location-dot"></i> <span data-i18n="menuBest">Best Mandis</span></div>
                 <div class="nav-item"><i class="fa-solid fa-robot"></i> <span data-i18n="menuAI">AI Predictions</span></div>
-                <div class="nav-item" id="nearestMandiMenuBtn"><i class="fa-solid fa-map-location-dot"></i> <span data-i18n="menuNearest">Nearest Mandi</span></div>
                 <div class="nav-item" id="calcMenuBtn"><i class="fa-solid fa-wallet"></i> <span data-i18n="menuCalc">Profit Calculator</span></div>
             </nav>
 
@@ -84,7 +83,10 @@
 
         <main class="main-content">
             <header class="top-header glass-panel">
-                <h2 id="pageTitle" data-i18n="overviewTitle">30-Day Market Overview</h2>
+                <div style="display:flex; align-items:center; gap: 12px;">
+                    <button id="mobileMenuBtn" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+                    <h2 id="pageTitle" data-i18n="overviewTitle">30-Day Market Overview</h2>
+                </div>
                 <div class="user-profile">
                     <img src="assets/avatar.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--emerald); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); object-fit: cover; margin-right: 8px;">
                     <span data-i18n="profileName">Farmer Profit Portal</span>
@@ -203,31 +205,6 @@
 
             <div id="finderResults" class="insights-list" style="margin-top: 10px; max-height: 250px; overflow-y: auto;">
                 <!-- Dynamically injected results -->
-            </div>
-        </div>
-    </div>
-
-    <!-- GPS Mandi Locator Modal -->
-    <div id="nearestMandiModal" class="modal-overlay hidden">
-        <div class="modal-content glass-panel" style="width: 550px;">
-            <div class="modal-header">
-                <h3 data-i18n="nearestTitle">GPS Mandi Graph</h3>
-                <button id="closeNearest" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div style="text-align: center; margin: 20px 0;" id="gpsPromptBlock">
-                <i class="fa-solid fa-satellite-dish pulse-hover" style="font-size: 3rem; color: var(--emerald); margin-bottom: 20px;"></i>
-                <p data-i18n="nearestDesc">Allow GPS access to triangulate closest agricultural markets into a web network.</p>
-                <button id="requestGpsBtn" class="btn-primary" style="margin-top: 20px;"><i class="fa-solid fa-location-crosshairs"></i> Locate Me</button>
-            </div>
-
-            <div id="gpsLoadingBlock" class="hidden" style="text-align: center; padding: 40px;">
-                <div class="spinner-modern" style="margin-bottom: 15px;"></div>
-                <p style="color: var(--emerald);">Triangulating Coordinates...</p>
-            </div>
-
-            <div id="gpsResultsBlock" class="hidden" style="position: relative; height: 350px; border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; background: rgba(0,0,0,0.5); overflow: hidden; margin-top: 15px;">
-                <div id="graphContainer" style="width: 100%; height: 100%; position: relative;"></div>
             </div>
         </div>
     </div>

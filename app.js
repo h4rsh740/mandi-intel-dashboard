@@ -51,10 +51,7 @@ const translations = {
         factorVolume: "Highest Trade Volume (Simulated)",
         finderBtn: "Find Best Mandis",
         aiModelLabel: "AI Brain (OpenRouter)",
-        aiModelDefault: "Default Mode (Math Rules)",
-        menuNearest: "Nearest Mandi",
-        nearestTitle: "GPS Mandi Graph",
-        nearestDesc: "Allow GPS access to triangulate closest agricultural markets into a web network."
+        aiModelDefault: "Default Mode (Math Rules)"
     },
     hi: {
         appTitle: "मंडी<span class='text-emerald'>इंटेल</span>",
@@ -102,10 +99,7 @@ const translations = {
         factorVolume: "उच्चतम व्यापार मात्रा (सिम्युलेटेड)",
         finderBtn: "सर्वश्रेष्ठ मंडी खोजें",
         aiModelLabel: "AI मस्तिष्क (OpenRouter)",
-        aiModelDefault: "डिफ़ॉल्ट मोड (गणित नियम)",
-        menuNearest: "निकटतम मंडी",
-        nearestTitle: "GPS मंडी ग्राफ़",
-        nearestDesc: "निकटतम कृषि बाजारों को एक वेब नेटवर्क में त्रिकोणीय बनाने के लिए GPS एक्सेस की अनुमति दें।"
+        aiModelDefault: "डिफ़ॉल्ट मोड (गणित नियम)"
     }
 };
 
@@ -759,128 +753,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ----------------------------------------------------
-    // GPS Mandi Locator Web-Graph Node Logic
+    // Mobile Hamburger Menu Override
     // ----------------------------------------------------
-    const nearestModal = document.getElementById('nearestMandiModal');
-    document.getElementById('nearestMandiMenuBtn').addEventListener('click', () => {
-        nearestModal.classList.remove('hidden');
-    });
-    document.getElementById('closeNearest').addEventListener('click', () => {
-        nearestModal.classList.add('hidden');
-        document.getElementById('gpsPromptBlock').classList.remove('hidden');
-        document.getElementById('gpsResultsBlock').classList.add('hidden');
-        document.getElementById('graphContainer').innerHTML = '';
-        document.getElementById('gpsLoadingBlock').classList.add('hidden');
-    });
-
-    // Haversine Formula for geo-distance
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371; // km
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    };
-
-    // Dictionary of core coordinates for live and dummy nodes
-    const mandiCoordinates = {
-        'Azadpur': { lat: 28.7360, lng: 77.1728 },
-        'Nashik': { lat: 20.0000, lng: 73.7845 },
-        'Karnal': { lat: 29.6857, lng: 76.9905 },
-        'Pune': { lat: 18.5204, lng: 73.8567 },
-        'Vadhvan APMC': { lat: 19.8516, lng: 72.8252 }
-    };
-
-    document.getElementById('requestGpsBtn').addEventListener('click', () => {
-        document.getElementById('gpsPromptBlock').classList.add('hidden');
-        document.getElementById('gpsLoadingBlock').classList.remove('hidden');
-
-        // Request browser permission
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
-                renderMandiGraph(userLat, userLng);
-            }, (error) => {
-                let reason = "failed to resolve";
-                if (error.code === error.PERMISSION_DENIED) reason = "is already BLOCKED in your browser settings (Click the lock icon in your URL bar to reset it)";
-                if (error.code === error.POSITION_UNAVAILABLE) reason = "is unavailable on this specific MacOS network";
-                if (error.code === error.TIMEOUT) reason = "timed out";
-                
-                alert(`Hardware GPS request ${reason}!\n\nInitiating radar with simulated central-India coordinates instead so you can see the feature.`);
-                console.warn('GPS Denied or Timeout:', error);
-                renderMandiGraph(23.2599, 77.4126); 
-            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-        } else {
-            alert('Your browser does not support Geolocation. Using simulated coordinates.');
-            renderMandiGraph(23.2599, 77.4126);
-        }
-    });
-
-    const renderMandiGraph = (uLat, uLng) => {
-        document.getElementById('gpsLoadingBlock').classList.add('hidden');
-        const container = document.getElementById('gpsResultsBlock');
-        container.classList.remove('hidden');
-
-        // Identify currently loaded Mandis from API or Dummy source
-        const clean = cleanData(window.__cachedRawData || []);
-        const unique = [...new Set(clean.map(item => item.mandi))];
-
-        let mapped = [];
-        unique.forEach(mName => {
-            const coords = mandiCoordinates[mName] || { lat: 25.0 + Math.random()*5, lng: 75.0 + Math.random()*5 };
-            const dist = calculateDistance(uLat, uLng, coords.lat, coords.lng);
-            mapped.push({ name: mName, dist: Math.round(dist) });
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
         });
 
-        // Filter to TOP 4 Closest Nodes
-        mapped.sort((a,b) => a.dist - b.dist);
-        const closest = mapped.slice(0, 4);
-        
-        let graphHTML = `<svg style="position:absolute; width:100%; height:100%; top:0; left:0; z-index:1;">`;
-        let nodesHTML = '';
-        
-        const maxDist = Math.max(...closest.map(c => c.dist)) || 1;
-        
-        closest.forEach((mandi, idx) => {
-            // Spin each node logically across a 360 circle
-            const angle = (Math.PI * 2 * idx) / closest.length;
-            // Generate visual distance from center using math formulas (17% to 40% radius bounds)
-            const rPercent = 17 + ((mandi.dist / maxDist) * 23);
-            
-            const px = 50 + rPercent * Math.cos(angle);
-            const py = 50 + rPercent * Math.sin(angle);
-            
-            // Render glowing vector laser line
-            graphHTML += `<line x1="50%" y1="50%" x2="${px}%" y2="${py}%" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,4" style="opacity:0.5; animation: dash 20s linear infinite;"></line>`;
-            
-            // Render UI Node
-            nodesHTML += `
-                <div style="position:absolute; left:${px}%; top:${py}%; transform:translate(-50%, -50%); z-index:2; text-align:center;">
-                    <div style="width:18px; height:18px; background:var(--emerald); border-radius:50%; box-shadow:0 0 12px var(--emerald); margin:0 auto;"></div>
-                    <div style="margin-top:8px; background:rgba(0,0,0,0.8); padding:6px 10px; border-radius:6px; font-size:0.8rem; border:1px solid rgba(16,185,129,0.4); color:#fff; white-space:nowrap; backdrop-filter:blur(4px);">
-                        <strong style="color:var(--emerald-light); font-size:0.9rem;">${translateData(mandi.name)}</strong><br>
-                        ${mandi.dist} KM
-                    </div>
-                </div>
-            `;
+        // Close sidebar on apply filters
+        document.getElementById('applyFilters').addEventListener('click', () => {
+            if (window.innerWidth <= 800) {
+                sidebar.classList.remove('open');
+            }
         });
-        
-        graphHTML += `</svg>`;
-        
-        // Superimpose the Primary User Node into dead center
-        nodesHTML += `
-            <div style="position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); z-index:3; text-align:center;">
-                <div style="width:34px; height:34px; background:linear-gradient(135deg, var(--purple), #38bdf8); border:2px solid #fff; border-radius:50%; box-shadow:0 0 20px #6d28d9; margin:0 auto; animation: pulse 2s infinite;"></div>
-                <div style="margin-top:8px; background:rgba(0,0,0,0.9); padding:5px 12px; border-radius:20px; font-size:0.9rem; color:#fff; border:1px solid rgba(255,255,255,0.2);">
-                    <strong>${currentLang==='hi'?'आप (YOU)':'YOU'}</strong>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('graphContainer').innerHTML = graphHTML + nodesHTML;
-    };
+    }
 });
