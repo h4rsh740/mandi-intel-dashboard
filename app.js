@@ -932,4 +932,14 @@ document.addEventListener('DOMContentLoaded', () => {
             item.addEventListener('click', closeSidebarOnMobile);
         });
     }
+    // ----------------------------------------------------
+    // User Session Logic
+    // ----------------------------------------------------
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('mandiUser');
+            window.location.href = 'login.html';
+        });
+    }
 });

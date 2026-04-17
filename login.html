@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MandiIntel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --emerald: #10b981;
+            --glass: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg-dark);
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+        }
+        .login-card {
+            width: 400px; padding: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .logo { font-size: 2rem; font-weight: 700; margin-bottom: 30px; }
+        .emerald { color: var(--emerald); }
+        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; }
+        .input-group input {
+            width: 100%; padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white; outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .input-group input:focus { border-color: var(--emerald); }
+        .btn-primary {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, var(--emerald) 0%, #059669 100%);
+            border: none; border-radius: 8px;
+            color: white; font-weight: 600; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        .toggle-text { margin-top: 20px; font-size: 0.9rem; color: #94a3b8; }
+        .toggle-text span { color: var(--emerald); cursor: pointer; font-weight: 600; }
+        .error { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">Mandi<span class="emerald">Intel</span></div>
+        <h2 id="authTitle">Farmer Login</h2>
+        <p style="color: #94a3b8; margin-bottom: 30px;" id="authDesc">Enter credentials to access the nodes.</p>
+        
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+
+        <button class="btn-primary" id="authBtn">Sign In</button>
+        <div id="errorMessage" class="error">Invalid username or password</div>
+
+        <div class="toggle-text">
+            <span id="toggleMode">Create New Account</span>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+        const toggleBtn = document.getElementById('toggleMode');
+        const authBtn = document.getElementById('authBtn');
+        const title = document.getElementById('authTitle');
+        const desc = document.getElementById('authDesc');
+        const errorMsg = document.getElementById('errorMessage');
+
+        toggleBtn.addEventListener('click', () => {
+            isLogin = !isLogin;
+            title.innerText = isLogin ? 'Farmer Login' : 'Create Account';
+            desc.innerText = isLogin ? 'Enter credentials to access the nodes.' : 'Join the nationwide agriculture network.';
+            authBtn.innerText = isLogin ? 'Sign In' : 'Sign Up';
+            toggleBtn.innerText = isLogin ? 'Create New Account' : 'Back to Login';
+            errorMsg.style.display = 'none';
+        });
+
+        authBtn.addEventListener('click', () => {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if (!user || !pass) {
+                errorMsg.innerText = 'Please fill all fields';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            if (isLogin) {
+                const stored = JSON.parse(localStorage.getItem('farmerDB') || '[]');
+                const found = stored.find(u => u.username === user && u.password === pass);
+                if (found || (user === 'admin' && pass === 'admin')) {
+                    localStorage.setItem('mandiUser', user);
+                    window.location.href = 'index.html';
+                } else {
+                    errorMsg.innerText = 'Invalid username or password';
+                    errorMsg.style.display = 'block';
+                }
+            } else {
+                const stored = JSON.parse(localStorage.getItem('farmerDB') || '[]');
+                if (stored.find(u => u.username === user)) {
+                    errorMsg.innerText = 'Username already exists';
+                    errorMsg.style.display = 'block';
+                } else {
+                    stored.push({username: user, password: pass});
+                    localStorage.setItem('farmerDB', JSON.stringify(stored));
+                    localStorage.setItem('mandiUser', user);
+                    alert('Farmer Account Created Successfully!');
+                    window.location.href = 'index.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

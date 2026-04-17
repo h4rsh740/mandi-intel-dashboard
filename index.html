@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Authentication Guard: Redirect if not logged in
+        if (!localStorage.getItem('mandiUser')) {
+            window.location.href = 'login.html';
+        }
+    </script>
 </head>
 <body>
     <!-- Global Loading Screen -->
@@ -52,21 +58,14 @@
                 <div class="filter-group">
                     <label for="cropSelect" data-i18n="selectCrop">Select Crop</label>
                     <select id="cropSelect" class="cyber-select">
-                        <option value="All">All Crops</option>
-                        <option value="Wheat">Wheat</option>
-                        <option value="Rice">Rice</option>
-                        <option value="Tomato">Tomato</option>
-                        <option value="Potato">Potato</option>
+                        <!-- Dynamic -->
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <label for="mandiSelect">Select Mandi</label>
                     <select id="mandiSelect" class="cyber-select">
-                        <option value="All">All Mandis</option>
-                        <option value="Azadpur">Azadpur</option>
-                        <option value="Nashik">Nashik</option>
-                        <option value="Karnal">Karnal</option>
+                        <!-- Dynamic -->
                     </select>
                 </div>
 
@@ -93,8 +92,8 @@
                     <h2 id="pageTitle" data-i18n="overviewTitle">30-Day Market Overview</h2>
                 </div>
                 <div class="user-profile">
-                    <img src="assets/avatar.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--emerald); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); object-fit: cover; margin-right: 8px;">
                     <span data-i18n="profileName">Farmer Profit Portal</span>
+                    <button id="logoutBtn" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; margin-left:10px; font-size:1.1rem;"><i class="fa-solid fa-power-off"></i></button>
                 </div>
             </header>
 
