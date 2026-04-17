@@ -55,7 +55,8 @@ const translations = {
         menuBasicCalc: "Basic Calculator",
         basicCalcTitle: "Hardware Calculator",
         menuCompare: "Price Comparison",
-        compareTitle: "Price Comparison (Ref: Lucknow)"
+        compareTitle: "Price Comparison (Ref: Lucknow)",
+        selectCropPrompt: "Choose Crop..."
     },
     hi: {
         appTitle: "मंडी<span class='text-emerald'>इंटेल</span>",
@@ -107,7 +108,8 @@ const translations = {
         menuBasicCalc: "बेसिक कैलकुलेटर",
         basicCalcTitle: "हार्डवेयर कैलकुलेटर",
         menuCompare: "मूल्य तुलना",
-        compareTitle: "मूल्य तुलना (संदर्भ: लखनऊ)"
+        compareTitle: "मूल्य तुलना (संदर्भ: लखनऊ)",
+        selectCropPrompt: "फसल चुनें..."
     }
 };
 
@@ -790,8 +792,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.getElementById('priceCompareMenuBtn').addEventListener('click', () => {
+        populateComparisonCrops();
         compareModal.classList.remove('hidden');
     });
+
+    const populateComparisonCrops = () => {
+        const select = document.getElementById('compareCropSelect');
+        const data = cleanData(window.__cachedRawData || []);
+        const uniqueCrops = [...new Set(data.map(item => item.commodity))].sort();
+        
+        // Preserve "Choose Crop" option
+        const promptText = currentLang === 'hi' ? translations.hi.selectCropPrompt : translations.en.selectCropPrompt;
+        select.innerHTML = `<option value="">${promptText}</option>`;
+        
+        uniqueCrops.forEach(crop => {
+            const option = document.createElement('option');
+            option.value = crop;
+            option.textContent = translateData(crop);
+            select.appendChild(option);
+        });
+    };
+
     document.getElementById('closeCompare').addEventListener('click', () => {
         compareModal.classList.add('hidden');
     });
