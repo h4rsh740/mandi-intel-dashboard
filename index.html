@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Mandi Intelligence Dashboard</title>
+    <meta name="description" content="AI-powered dashboard for farmers to predict crop prices, analyze trends, and find the best mandis for maximum profit.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Global Loading Screen -->
+    <div id="globalLoader" class="global-loader">
+        <div class="loader-content">
+            <i class="fa-solid fa-leaf text-emerald" style="font-size: 3rem; margin-bottom: 15px; animation: pulse 2s infinite;"></i>
+            <h1 style="margin:0; font-size: 2.5rem; letter-spacing: -1px;">Mandi<span class="text-emerald">Intel</span></h1>
+            <p style="color: var(--text-muted); margin-top: 10px; font-weight: 300;">Syncing with Indian Agriculture Nodes...</p>
+            <div class="spinner-modern"></div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <aside class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-leaf text-emerald"></i>
+                <h1 data-i18n="appTitle">Mandi<span class="text-emerald">Intel</span></h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active"><i class="fa-solid fa-chart-line"></i> <span data-i18n="menuTrends">Market Trends</span></div>
+                <div class="nav-item" id="bestMandiMenuBtn"><i class="fa-solid fa-location-dot"></i> <span data-i18n="menuBest">Best Mandis</span></div>
+                <div class="nav-item"><i class="fa-solid fa-robot"></i> <span data-i18n="menuAI">AI Predictions</span></div>
+                <div class="nav-item" id="nearestMandiMenuBtn"><i class="fa-solid fa-map-location-dot"></i> <span data-i18n="menuNearest">Nearest Mandi</span></div>
+                <div class="nav-item" id="calcMenuBtn"><i class="fa-solid fa-wallet"></i> <span data-i18n="menuCalc">Profit Calculator</span></div>
+            </nav>
+
+            <div class="filters">
+                <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <h3 data-i18n="filterTitle"><i class="fa-solid fa-filter"></i> Crop & Mandi Filters</h3>
+                    <select id="langSwitcher" class="cyber-select" style="width: auto; padding: 4px;">
+                        <option value="en">Eng</option>
+                        <option value="hi">हिंदी</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="cropSelect" data-i18n="selectCrop">Select Crop</label>
+                    <select id="cropSelect" class="cyber-select">
+                        <option value="All">All Crops</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Potato">Potato</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="mandiSelect">Select Mandi</label>
+                    <select id="mandiSelect" class="cyber-select">
+                        <option value="All">All Mandis</option>
+                        <option value="Azadpur">Azadpur</option>
+                        <option value="Nashik">Nashik</option>
+                        <option value="Karnal">Karnal</option>
+                    </select>
+                </div>
+
+                <div class="calc-field" style="margin-bottom: 15px;">
+                    <label data-i18n="aiModelLabel">AI Brain (OpenRouter)</label>
+                    <select id="aiModelSelect" class="cyber-select">
+                        <option value="default" data-i18n="aiModelDefault">Default Mode (Math Rules)</option>
+                        <option value="google/gemini-2.0-flash-lite-preview-02-05:free">Gemini 2.0 Flash Lite</option>
+                        <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B</option>
+                        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B</option>
+                        <option value="microsoft/phi-3-mini-128k-instruct:free">Phi-3 Mini</option>
+                    </select>
+                </div>
+                
+                <button id="applyFilters" class="btn-primary" data-i18n="applyBtn">Apply Filters</button>
+                <button id="toggleDataBtn" class="btn-primary" style="background: linear-gradient(135deg, var(--purple) 0%, #6d28d9 100%); margin-top: 8px;" data-i18n="useDummyData">Use Dummy Data</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header glass-panel">
+                <h2 id="pageTitle" data-i18n="overviewTitle">30-Day Market Overview</h2>
+                <div class="user-profile">
+                    <img src="assets/avatar.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--emerald); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); object-fit: cover; margin-right: 8px;">
+                    <span data-i18n="profileName">Farmer Profit Portal</span>
+                </div>
+            </header>
+
+            <!-- Hero Banner -->
+            <div style="width: 100%; height: 160px; margin-bottom: 24px; border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--panel-border);">
+                <img src="assets/banner.png" alt="Agri Tech Data" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.75;">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 75%; background: linear-gradient(to bottom, transparent, var(--bg-dark));"></div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card glass-panel pulse-hover">
+                    <div class="metric-icon bg-emerald-light"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div class="metric-info">
+                        <p data-i18n="bestMandiLabel">Best Mandi Right Now</p>
+                        <h3 id="bestMandiDisplay">Loading...</h3>
+                    </div>
+                </div>
+                <div class="metric-card glass-panel pulse-hover">
+                    <div class="metric-icon bg-blue-light"><i class="fa-solid fa-coins"></i></div>
+                    <div class="metric-info">
+                        <p data-i18n="maxPriceLabel">Max Current Price</p>
+                        <h3 id="maxPriceDisplay">₹ --/Qtl</h3>
+                    </div>
+                </div>
+                <div class="metric-card glass-panel pulse-hover">
+                    <div class="metric-icon bg-purple-light"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="metric-info">
+                        <p data-i18n="suggestedLabel">Suggested Action</p>
+                        <h3 id="suggestedActionDisplay" class="text-gradient">--</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <section class="chart-section glass-panel">
+                    <div class="section-header">
+                        <h3 data-i18n="chartTitle">Price Trend & 7-Day Prediction</h3>
+                        <span class="badge" data-i18n="chartBadge">Moving Average Model</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </section>
+
+                <aside class="insights-section glass-panel">
+                    <h3 data-i18n="insightsTitle"><i class="fa-solid fa-lightbulb text-yellow"></i> Farmer-Focused Insights</h3>
+                    <div id="insightsContainer" class="insights-list">
+                        <!-- Insights dynamically populated here -->
+                        <div class="insight-item loadingSkeleton"></div>
+                        <div class="insight-item loadingSkeleton"></div>
+                        <div class="insight-item loadingSkeleton"></div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+    <!-- Profit Calculator Modal -->
+    <div id="calcModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3 data-i18n="calcTitle">Profit Calculator</h3>
+                <button id="closeCalc" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="calc-field">
+                <label for="calcQty" data-i18n="calcQty">Quantity (Quintals)</label>
+                <input type="number" id="calcQty" placeholder="10" min="1" value="10">
+            </div>
+
+            <div class="calc-field">
+                <label for="calcTransport" data-i18n="calcTransport">Transport Cost (₹)</label>
+                <input type="number" id="calcTransport" placeholder="500" min="0" value="500">
+            </div>
+
+            <div class="calc-field">
+                <label for="calcOther" data-i18n="calcOther">Other Costs (₹)</label>
+                <input type="number" id="calcOther" placeholder="0" min="0" value="0">
+            </div>
+
+            <button id="calcProfitBtn" class="btn-primary" data-i18n="calcBtn">Calculate Profit</button>
+
+            <div id="calcResultDisplay" class="calc-result hidden">
+                <span data-i18n="calcResult">Expected Profit:</span> <br>
+                <h2 id="calcProfitValue" style="margin-top: 8px;">₹ 0</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Mandi Finder Modal -->
+    <div id="bestMandiModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3 data-i18n="finderTitle">Best Mandi Finder</h3>
+                <button id="closeFinder" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="calc-field">
+                <label for="finderCropSelect" data-i18n="finderCrop">Target Crop</label>
+                <select id="finderCropSelect" class="cyber-select"></select>
+            </div>
+
+            <div class="calc-field">
+                <label for="finderFactorSelect" data-i18n="finderFactor">Optimization Factor</label>
+                <select id="finderFactorSelect" class="cyber-select">
+                    <option value="price" data-i18n="factorPrice">Highest Selling Price</option>
+                    <option value="distance" data-i18n="factorDistance">Closest Distance (Simulated)</option>
+                    <option value="volume" data-i18n="factorVolume">Highest Trade Volume (Simulated)</option>
+                </select>
+            </div>
+
+            <button id="findBestMandiBtn" class="btn-primary" data-i18n="finderBtn">Find Best Mandis</button>
+
+            <div id="finderResults" class="insights-list" style="margin-top: 10px; max-height: 250px; overflow-y: auto;">
+                <!-- Dynamically injected results -->
+            </div>
+        </div>
+    </div>
+
+    <!-- GPS Mandi Locator Modal -->
+    <div id="nearestMandiModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 550px;">
+            <div class="modal-header">
+                <h3 data-i18n="nearestTitle">GPS Mandi Graph</h3>
+                <button id="closeNearest" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;" id="gpsPromptBlock">
+                <i class="fa-solid fa-satellite-dish pulse-hover" style="font-size: 3rem; color: var(--emerald); margin-bottom: 20px;"></i>
+                <p data-i18n="nearestDesc">Allow GPS access to triangulate closest agricultural markets into a web network.</p>
+                <button id="requestGpsBtn" class="btn-primary" style="margin-top: 20px;"><i class="fa-solid fa-location-crosshairs"></i> Locate Me</button>
+            </div>
+
+            <div id="gpsLoadingBlock" class="hidden" style="text-align: center; padding: 40px;">
+                <div class="spinner-modern" style="margin-bottom: 15px;"></div>
+                <p style="color: var(--emerald);">Triangulating Coordinates...</p>
+            </div>
+
+            <div id="gpsResultsBlock" class="hidden" style="position: relative; height: 350px; border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; background: rgba(0,0,0,0.5); overflow: hidden; margin-top: 15px;">
+                <div id="graphContainer" style="width: 100%; height: 100%; position: relative;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Logic & Data -->
+    <script src="app.js"></script>
+</body>
+</html>
