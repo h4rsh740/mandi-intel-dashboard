@@ -621,6 +621,10 @@ const updateUI = async (skipFetch = false) => {
     } catch (e) {
         console.error("UI Update Failed:", e);
         document.getElementById('suggestedActionDisplay').innerText = "Error Loading";
+        if (loader) {
+            loader.style.visibility = 'hidden';
+            loader.style.display = 'none';
+        }
     }
 };
 
